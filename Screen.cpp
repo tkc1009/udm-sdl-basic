@@ -2,8 +2,7 @@
 
 namespace sdl_basic {
 	Screen::Screen() :
-		// m_window(NULL), m_renderer(NULL), m_texture(NULL), m_buffer1(NULL), m_buffer2(NULL) {
-        m_window(NULL), m_renderer(NULL), m_texture(NULL), m_buffer(NULL) {
+		m_window(NULL), m_renderer(NULL), m_texture(NULL), m_buffer1(NULL), m_buffer2(NULL) {
 	};
 
 	bool Screen::init() {
@@ -38,24 +37,15 @@ namespace sdl_basic {
         }
 
         // prepare memory
-        // m_buffer1 = new Uint32[SCREEN_WIDTH * SCREEN_HEIGHT];
-        // m_buffer2 = new Uint32[SCREEN_WIDTH * SCREEN_HEIGHT];
-        m_buffer = new Uint32[SCREEN_WIDTH * SCREEN_HEIGHT];
-
-        // memset(m_buffer1, 0, SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(Uint32));
-        // memset(m_buffer2, 0, SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(Uint32));
-        memset(m_buffer, 0, SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(Uint32));
-
-        // set every 4bytes as color into memory
-        for (int i = 0; i < SCREEN_WIDTH * SCREEN_HEIGHT; i++) {
-            // m_buffer1[i] = 0x1C2C3C00;
-            // m_buffer2[i] = 0x1C2C3C00;
-            m_buffer[i] = 0x1C2C3C00;
-        }
+        m_buffer1 = new Uint32[SCREEN_WIDTH * SCREEN_HEIGHT];
+        m_buffer2 = new Uint32[SCREEN_WIDTH * SCREEN_HEIGHT];
+        
+        memset(m_buffer1, 0, SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(Uint32));
+        memset(m_buffer2, 0, SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(Uint32));
  
 		return true;
 	};
-    /*
+
     void Screen::boxBlur() {
         // swap the calculated m_buffer2 to m_buffer1
         Uint32* temp = m_buffer1;
@@ -73,8 +63,8 @@ namespace sdl_basic {
                 int greenTotal = 0;
                 int blueTotal = 0;
 
-                for (int row = -1; row < 1; row++) {
-                    for (int col = -1; col < 1; col++) {
+                for (int row = -1; row <= 1; row++) {
+                    for (int col = -1; col <= 1; col++) {
                         int currentX = x + col;
                         int currentY = y + row;
 
@@ -100,11 +90,6 @@ namespace sdl_basic {
             }
         }
     }
-    */
-    
-    void Screen::clear() {
-        memset(m_buffer, 0, SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(Uint32));
-    }
     
     void Screen::setPixel(int x, int y, Uint8 red, Uint8 green, Uint8 blue) {
 
@@ -120,14 +105,12 @@ namespace sdl_basic {
         color <<= 8;
         color += 0xFF;
 
-        // m_buffer1[(y * SCREEN_WIDTH) + x] = color;
-        m_buffer[(y * SCREEN_WIDTH) + x] = color;
+        m_buffer1[(y * SCREEN_WIDTH) + x] = color;
     }
 
     void Screen::update() {
         // update screen
-        // SDL_UpdateTexture(m_texture, NULL, m_buffer1, SCREEN_WIDTH * sizeof(Uint32));
-        SDL_UpdateTexture(m_texture, NULL, m_buffer, SCREEN_WIDTH * sizeof(Uint32));
+        SDL_UpdateTexture(m_texture, NULL, m_buffer1, SCREEN_WIDTH * sizeof(Uint32));
         SDL_RenderClear(m_renderer);
         SDL_RenderCopy(m_renderer, m_texture, NULL, NULL);
         SDL_RenderPresent(m_renderer);
@@ -146,9 +129,8 @@ namespace sdl_basic {
 
 	void Screen::close() {
         // finalize screen
-        // delete[] m_buffer1;
-        // delete[] m_buffer2;
-        delete[] m_buffer;
+        delete[] m_buffer1;
+        delete[] m_buffer2;
         SDL_DestroyRenderer(m_renderer);
         SDL_DestroyTexture(m_texture);
         SDL_DestroyWindow(m_window);
